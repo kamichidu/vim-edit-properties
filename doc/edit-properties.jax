@@ -1,0 +1,67 @@
+*edit-properties*
+
+File       : doc/edit-properties.jax
+Author     : kamichidu <c.kamunagi@gmail.com>
+Last Change: 21-Apr-2013.
+Version    : 0.01
+License    :
+
+目次                                            *edit-properties-contents*
+
+    概要                                        |edit-properties-introduction|
+    インストール                                |edit-properties-install|
+    注意点                                      |edit-properties-note|
+    更新履歴                                    |edit-properties-changelog|
+
+==============================================================================
+概要                                            *edit-properties-introduction*
+
+    *edit-properties* は、javaのプロパティファイルを編集するためのプラグインで
+    す。プロパティファイルで日本語等を使用した場合の編集をやりやすくするため
+    に、jdkで提供されている`native2ascii`を用いて、読み込み、書き込み時に自動
+    でフィルタを行う機能を提供します。
+    
+    javaのプロパティファイルで日本語等、非ascii文字を使った場合、一般的
+    にはすべてascii文字で構成された文字列に変換して保存します。
+    例えば次のように変換することになります。
+>
+    ↓のようになります。
+
+    \u2193\u306e\u3088\u3046\u306b\u306a\u308a\u307e\u3059\u3002
+<
+    例えばeclipseでは、この変換を自動で行なってくれるプラグインがありますが、
+    vim用のものは見当たらなかったので作ってみました。
+
+==============================================================================
+インストール                                    *edit-properties-install*
+
+    TODO
+
+==============================================================================
+注意点                                          *edit-properties-note*
+
+    *edit-properties* を利用する場合、他のプラグインに思わぬ影響を与える可能性
+    があります。
+
+    *edit-properties* は、バッファに対してフィルタをかけることでその機能を提供
+    しています。処理の都合上、 *FileType* *BufWritePre* のイベントでフィルタを
+    かけ、バッファを変換しています。また *BufReadPre* イベント時にファイルタイ
+    プを設定しています。
+
+    vim標準では、 *BufRead* イベント時にファイルタイプを判定していますが、
+    このタイミングではフィルタ処理がうまくかからないため、ファイルタイプを
+    判定するタイミングを *BufReadPre* に変更しています。
+
+    上述の理由により、他のプラグインに対して影響を与える可能性があります。
+
+==============================================================================
+更新履歴                                        *edit-properties-changelog*
+
+https://github.com/KamunagiChiduru/vim-edit-properties/commits/master
+
+0.01 21-Apr-2013
+
+    * 公開
+
+vim:tw=78:ts=4:ft=help:norl:noet:fen:fdl=0:fdm=marker:
+
