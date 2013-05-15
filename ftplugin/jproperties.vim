@@ -1,5 +1,5 @@
 " Vim filetype plugin for edit java properties files that include non-latin1 characters.
-" Last Change: 21-Apr-2013.
+" Last Change: 15-May-2013.
 " Maintainer:  kamichidu <c.kamunagi@gmail.com>
 " License:     This file is placed in the public domain.
 
@@ -14,6 +14,8 @@ endif
 
 let s:save_cpo= &cpo
 set cpo&vim
+
+let b:undo_ftplugin= 'autocmd! vim_edit_properties'
 
 augroup vim_edit_properties
     autocmd!
