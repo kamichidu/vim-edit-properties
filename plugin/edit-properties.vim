@@ -1,6 +1,6 @@
 " ----------------------------------------------------------------------------
-" File:        jproperties.vim
-" Last Change: 22-May-2013.
+" File:        edit-properties.vim
+" Last Change: 06-Jun-2013.
 " Maintainer:  kamichidu <c.kamunagi@gmail.com>
 " License:     The MIT License (MIT) {{{
 " 
@@ -28,10 +28,10 @@
 "              OTHER DEALINGS IN THE SOFTWARE.
 " }}}
 " ----------------------------------------------------------------------------
-if exists('b:did_ftplugin')
+if exists('g:loaded_editproperties') && g:loaded_editproperties
     finish
 endif
-let b:did_ftplugin= 1
+let g:loaded_editproperties= 1
 
 if !executable('native2ascii')
     finish
@@ -39,8 +39,6 @@ endif
 
 let s:save_cpo= &cpo
 set cpo&vim
-
-let b:undo_ftplugin= 'autocmd! vim_edit_properties'
 
 augroup vim_edit_properties
     autocmd!
