@@ -1,7 +1,7 @@
 *edit-properties.jax*
 
-Version:     0.10
-Last Change: 22-May-2013.
+Version:     0.20
+Last Change: 06-Jun-2013.
 Maintainer:  kamichidu <c.kamunagi@gmail.com>
 License:     The MIT License (MIT) {{{
 
@@ -33,7 +33,6 @@ License:     The MIT License (MIT) {{{
 
     概要                                        |edit-properties-introduction|
     インストール                                |edit-properties-install|
-    注意点                                      |edit-properties-note|
     更新履歴                                    |edit-properties-changelog|
 
 ==============================================================================
@@ -58,29 +57,17 @@ License:     The MIT License (MIT) {{{
 ==============================================================================
 インストール                                    *edit-properties-install*
 
-    TODO
-
-==============================================================================
-注意点                                          *edit-properties-note*
-
-    |edit-properties| を利用する場合、他のプラグインに思わぬ影響を与える可能性
-    があります。
-
-    |edit-properties| は、バッファに対してフィルタをかけることでその機能を提供
-    しています。処理の都合上、 |FileType| |BufWritePre| のイベントでフィルタを
-    かけ、バッファを変換しています。また |BufReadPre| イベント時にファイルタイ
-    プを設定しています。
-
-    vim標準では、 |BufRead| イベント時にファイルタイプを判定していますが、
-    このタイミングではフィルタ処理がうまくかからないため、ファイルタイプを
-    判定するタイミングを |BufReadPre| に変更しています。
-
-    上述の理由により、他のプラグインに対して影響を与える可能性があります。
+	TODO
 
 ==============================================================================
 更新履歴                                        *edit-properties-changelog*
 
 https://github.com/KamunagiChiduru/vim-edit-properties/commits/master
+
+0.20 06-Jun-2013
+
+	* runtimepathへの追加タイミングによって動作しないバグを修正
+	* 上記修正に伴い、ftpluginではなく、pluginに変更
 
 0.10 22-May-2013
 
