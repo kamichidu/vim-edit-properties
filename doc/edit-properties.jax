@@ -1,6 +1,6 @@
 *edit-properties.jax* 日本語ヘルプ
 
-Version:     0.21
+Version:     0.22
 Last Change: 29-Jun-2013.
 Maintainer:  kamichidu <c.kamunagi@gmail.com>
 License:     The MIT License (MIT) {{{
@@ -63,6 +63,15 @@ License:     The MIT License (MIT) {{{
 更新履歴                                        *edit-properties-changelog*
 
 https://github.com/KamunagiChiduru/vim-edit-properties/commits/master
+
+0.22 29-Jun-2013
+
+	* native2ascii -reverseのタイミングを変更
+		* FileType -> BufReadPost,FileReadPost
+
+0.21 29-Jun-2013
+
+	* :helptagsの歳にE670が出たので修正
 
 0.20 06-Jun-2013
 

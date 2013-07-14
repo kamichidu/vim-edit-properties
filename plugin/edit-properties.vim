@@ -1,6 +1,6 @@
 " ----------------------------------------------------------------------------
 " File:        edit-properties.vim
-" Last Change: 06-Jun-2013.
+" Last Change: 29-Jun-2013.
 " Maintainer:  kamichidu <c.kamunagi@gmail.com>
 " License:     The MIT License (MIT) {{{
 " 
@@ -43,7 +43,7 @@ set cpo&vim
 augroup vim_edit_properties
     autocmd!
 
-    autocmd FileType jproperties %!native2ascii -reverse
+    autocmd BufReadPost,FileReadPost *.properties %!native2ascii -reverse
 
     autocmd BufWritePre *.properties %!native2ascii
     autocmd BufWritePost *.properties %!native2ascii -reverse
