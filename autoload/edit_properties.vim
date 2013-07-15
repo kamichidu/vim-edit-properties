@@ -1,5 +1,5 @@
 " ----------------------------------------------------------------------------
-" File:        edit-properties.vim
+" File:        autoload/edit_properties.vim
 " Last Change: 15-Jul-2013.
 " Maintainer:  kamichidu <c.kamunagi@gmail.com>
 " License:     The MIT License (MIT) {{{
@@ -28,31 +28,47 @@
 "              OTHER DEALINGS IN THE SOFTWARE.
 " }}}
 " ----------------------------------------------------------------------------
-if exists('g:loaded_editproperties') && g:loaded_editproperties
-    finish
-endif
-let g:loaded_editproperties= 1
-
-if !executable('native2ascii')
-    finish
-endif
-
 let s:save_cpo= &cpo
 set cpo&vim
 
-let g:editproperties_grepprg= get(g:, 'editproperties_grepprg', &grepprg)
-let g:editproperties_grepformat= get(g:, 'editproperties_grepformat', &grepformat)
+let s:V= vital#of('vital')
+let s:L= s:V.import('Data.List')
+unlet s:V
 
-augroup vim_edit_properties
-    autocmd!
+function! edit_properties#grep(...)
+    let l:args= s:L.with_index(a:000)
+    let l:pattern= s:find('v:val[0] =~# "^/.*/$"', l:args, ['//', -1])
 
-    autocmd BufReadPost,FileReadPost *.properties %!native2ascii -reverse
+    if l:pattern[1] > 0
+        let l:options= a:000[0 : (l:pattern[1] - 1)]
+    else
+        let l:options= []
+    endif
 
-    autocmd BufWritePre *.properties %!native2ascii
-    autocmd BufWritePost *.properties %!native2ascii -reverse
-augroup END
+    let l:files= a:000[(l:pattern[1] + 1) : ]
 
-command! -nargs=+ -complete=file EditPropsGrep call edit_properties#grep(<f-args>)
+    let l:pattern[0]= substitute(l:pattern[0], '^/\|/$', '', 'g')
+    let l:pattern[0]= substitute(system('native2ascii', l:pattern[0]), "\n$", '', '')
+    let l:pattern[0]= substitute(l:pattern[0], '\\u', '\\\\u', 'g')
+
+    let l:save_grepprg= &l:grepprg
+    let l:save_grepformat= &l:grepformat
+    let &l:grepprg= g:editproperties_grepprg
+    let &l:grepformat= g:editproperties_grepformat
+    execute join(s:L.flatten(['grep', l:options, shellescape(l:pattern[0]), l:files]), ' ')
+    let &l:grepprg= l:save_grepprg
+    let &l:grepformat= l:save_grepformat
+endfunction
+
+function! s:find(predicate, list, ...)
+    let l:filtered= filter(deepcopy(a:list), a:predicate)
+
+    if empty(l:filtered)
+        return a:1
+    endif
+
+    return l:filtered[0]
+endfunction
 
 let &cpo= s:save_cpo
 unlet s:save_cpo
