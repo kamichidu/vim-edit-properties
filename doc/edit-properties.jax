@@ -1,7 +1,7 @@
 *edit-properties.jax* 日本語ヘルプ
 
-Version:     0.23
-Last Change: 15-Jul-2013.
+Version:     0.24
+Last Change: 28-Dec-2013.
 Maintainer:  kamichidu <c.kamunagi@gmail.com>
 License:     The MIT License (MIT) {{{
 
@@ -42,7 +42,7 @@ License:     The MIT License (MIT) {{{
 
     *edit-properties* は、javaのプロパティファイルを編集するためのプラグインで
     す。プロパティファイルで日本語等を使用した場合の編集をやりやすくするため
-    に、jdkで提供されている`native2ascii`を用いて、読み込み、書き込み時に自動
+    に、JDKで提供されている`native2ascii`を用いて、読み込み、書き込み時に自動
     でフィルタを行う機能を提供します。
     
     javaのプロパティファイルで日本語等、非ascii文字を使った場合、一般的
@@ -59,7 +59,13 @@ License:     The MIT License (MIT) {{{
 ==============================================================================
 インストール                                    *edit-properties-install*
 
-    TODO
+    `native2ascii`が実行可能である必要があります。`native2ascii`はJDKに
+    付属しているため、JDKがインストールされている必要があります。
+    |vim-edit-properties|は、以下を.vimrcに追加し、|:NeoBundleInstall|すること
+    でインストールすることができます。
+>
+    NeoBundle 'KamunagiChiduru/vim-edit-properties'
+<
 
 ==============================================================================
 変数                                            *edit-properties-variable*
@@ -87,6 +93,10 @@ g:editproperties_grepformat                     *g:editproperties_grepformat*
 更新履歴                                        *edit-properties-changelog*
 
 https://github.com/KamunagiChiduru/vim-edit-properties/commits/master
+
+0.24 28-Dec-2013
+
+    * リファクタリング実施
 
 0.23 15-Jul-2013
 
@@ -116,4 +126,3 @@ https://github.com/KamunagiChiduru/vim-edit-properties/commits/master
     * 公開
 
 vim:tw=78:ts=4:ft=help:norl:et:fen:fdl=0:fdm=marker:
-

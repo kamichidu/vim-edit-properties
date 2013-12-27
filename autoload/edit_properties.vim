@@ -1,6 +1,6 @@
 " ----------------------------------------------------------------------------
 " File:        autoload/edit_properties.vim
-" Last Change: 15-Jul-2013.
+" Last Change: 28-Dec-2013.
 " Maintainer:  kamichidu <c.kamunagi@gmail.com>
 " License:     The MIT License (MIT) {{{
 " 
@@ -31,46 +31,64 @@
 let s:save_cpo= &cpo
 set cpo&vim
 
-let s:V= vital#of('vital')
+let s:V= vital#of('vim-edit-properties')
 let s:L= s:V.import('Data.List')
+let s:P= s:V.import('Process')
 unlet s:V
 
 function! edit_properties#grep(...)
-    let l:args= s:L.with_index(a:000)
-    let l:pattern= s:find('v:val[0] =~# "^/.*/$"', l:args, ['//', -1])
-
-    if l:pattern[1] > 0
-        let l:options= a:000[0 : (l:pattern[1] - 1)]
-    else
-        let l:options= []
+    let l:args= copy(a:000)
+    " validate arguments
+    if empty(filter(copy(l:args), 'v:val =~# ''^/.*/$'''))
+        echoerr 'edit_properties: /pattern/ is required!'
+        return
     endif
+    " EditPropsGrep --hoge --fuga /aaaa/ ~/dir/filename
+    " => l:grep_args == ['--hoge', '--fuga']
+    " => l:pattern   == 'aaaa'
+    " => l:filenames == ['~/dir/filename']
+    let [l:grep_args, l:pattern, l:filenames]= [[], '', []]
+    while !empty(l:args)
+        let l:arg= s:L.shift(l:args)
 
-    let l:files= a:000[(l:pattern[1] + 1) : ]
+        if l:arg =~# '^-'
+            call s:L.push(l:grep_args, l:arg)
+        elseif l:arg =~# '^/.*/$'
+            let l:pattern= matchstr(l:arg, '^/\zs.*\ze/$')
+            let l:filenames= l:args
+            break
+        endif
 
-    let l:pattern[0]= substitute(l:pattern[0], '^/\|/$', '', 'g')
-    let l:pattern[0]= substitute(system('native2ascii', l:pattern[0]), "\n$", '', '')
-    let l:pattern[0]= substitute(l:pattern[0], '\\u', '\\\\u', 'g')
+        unlet l:arg
+    endwhile
 
-    let l:save_grepprg= &l:grepprg
-    let l:save_grepformat= &l:grepformat
-    let &l:grepprg= g:editproperties_grepprg
-    let &l:grepformat= g:editproperties_grepformat
-    execute join(s:L.flatten(['grep', l:options, shellescape(l:pattern[0]), l:files]), ' ')
-    let &l:grepprg= l:save_grepprg
-    let &l:grepformat= l:save_grepformat
-endfunction
+    " make pattern to searchable
+    let l:pattern= s:P.system('native2ascii', l:pattern)
+    let l:pattern= substitute(l:pattern, "\n$", '', '')
+    let l:pattern= substitute(l:pattern, '\c\\u', '\\\\u', 'g')
 
-function! s:find(predicate, list, ...)
-    let l:filtered= filter(deepcopy(a:list), a:predicate)
+    " execute grep
+    " save environment
+    let l:save_env= [&l:grepprg, &l:grepformat]
 
-    if empty(l:filtered)
-        return a:1
-    endif
+    " prepare
+    let &l:grepprg= get(g:, 'editproperties_grepprg', &l:grepprg)
+    let &l:grepformat= get(g:, 'editproperties_grepformat', &l:grepformat)
 
-    return l:filtered[0]
+    let l:cmd= join([
+    \       'grep',
+    \       join(l:grep_args, ' '),
+    \       l:pattern,
+    \       join(map(copy(l:filenames), 'expand(v:val)'), ' '),
+    \   ],
+    \   ' '
+    \)
+    execute l:cmd
+
+    " restore environment
+    let [&l:grepprg, &l:grepformat]= l:save_env
 endfunction
 
 let &cpo= s:save_cpo
 unlet s:save_cpo
 " vim:ft=vim:foldenable:foldmethod=marker
-
