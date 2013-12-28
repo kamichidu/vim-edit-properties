@@ -35,6 +35,7 @@ License:     The MIT License (MIT) {{{
     インストール                                |edit-properties-install|
     変数                                        |edit-properties-variable|
     コマンド                                    |edit-properties-command|
+    Uniteインタフェイス                      |edit-properties-unite-interface|
     更新履歴                                    |edit-properties-changelog|
 
 ==============================================================================
@@ -64,7 +65,10 @@ License:     The MIT License (MIT) {{{
     |vim-edit-properties|は、以下を.vimrcに追加し、|:NeoBundleInstall|すること
     でインストールすることができます。
 >
-    NeoBundle 'KamunagiChiduru/vim-edit-properties'
+    " Optional: 'Shougo/unite.vim'
+    NeoBundle 'KamunagiChiduru/vim-edit-properties', {
+    \   'depends': ['Shougo/unite.vim'],
+    \}
 <
 
 ==============================================================================
@@ -88,7 +92,14 @@ g:editproperties_grepformat                     *g:editproperties_grepformat*
 >
     :EditPropsGrep /(ほ)+げ/ *
 <
+==============================================================================
+Uniteインタフェイス                          *edit-properties-unite-interface*
 
+    |unite.vim|をインストールしていれば、現在編集中のファイルに対応する
+    別ロケール用のファイルを一覧し、移動することができます。
+>
+    :Unite edit_properties/locale
+<
 ==============================================================================
 更新履歴                                        *edit-properties-changelog*
 
