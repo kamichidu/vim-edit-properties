@@ -1,6 +1,6 @@
 " ----------------------------------------------------------------------------
 " File:        edit-properties.vim
-" Last Change: 15-Jul-2013.
+" Last Change: 21-Apr-2014.
 " Maintainer:  kamichidu <c.kamunagi@gmail.com>
 " License:     The MIT License (MIT) {{{
 " 
@@ -46,10 +46,10 @@ let g:editproperties_grepformat= get(g:, 'editproperties_grepformat', &grepforma
 augroup vim_edit_properties
     autocmd!
 
-    autocmd BufReadPost,FileReadPost *.properties %!native2ascii -reverse
+    autocmd BufReadPost,FileReadPost *.properties silent %!native2ascii -reverse
 
-    autocmd BufWritePre *.properties %!native2ascii
-    autocmd BufWritePost *.properties %!native2ascii -reverse
+    autocmd BufWritePre *.properties silent %!native2ascii
+    autocmd BufWritePost *.properties silent %!native2ascii -reverse
 augroup END
 
 command! -nargs=+ -complete=file EditPropsGrep call edit_properties#grep(<f-args>)
