@@ -1,6 +1,6 @@
 " ----------------------------------------------------------------------------
 " File:        autoload/edit_properties.vim
-" Last Change: 28-Dec-2013.
+" Last Change: 22-Jul-2014.
 " Maintainer:  kamichidu <c.kamunagi@gmail.com>
 " License:     The MIT License (MIT) {{{
 " 
@@ -35,6 +35,8 @@ let s:V= vital#of('vim-edit-properties')
 let s:L= s:V.import('Data.List')
 let s:P= s:V.import('Process')
 unlet s:V
+
+let s:n2a= edit_properties#native2ascii#get()
 
 function! edit_properties#grep(...)
     let l:args= copy(a:000)
@@ -87,6 +89,30 @@ function! edit_properties#grep(...)
 
     " restore environment
     let [&l:grepprg, &l:grepformat]= l:save_env
+endfunction
+
+" \uxxxx => あ
+function! edit_properties#ascii2native(expr, lnum, ...)
+    let lines= getbufline(a:expr, a:lnum, get(a:000, 0, a:lnum))
+    let buf= []
+
+    for line in lines
+        let buf+= [s:n2a.decode(line)]
+    endfor
+
+    call setline(a:lnum, buf)
+endfunction
+
+" あ => \uxxxx
+function! edit_properties#native2ascii(expr, lnum, ...)
+    let lines= getbufline(a:expr, a:lnum, get(a:000, 0, a:lnum))
+    let buf= []
+
+    for line in lines
+        let buf+= [s:n2a.encode(line)]
+    endfor
+
+    call setline(a:lnum, buf)
 endfunction
 
 let &cpo= s:save_cpo
