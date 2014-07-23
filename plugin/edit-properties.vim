@@ -1,6 +1,6 @@
 " ----------------------------------------------------------------------------
 " File:        edit-properties.vim
-" Last Change: 22-Jul-2014.
+" Last Change: 24-Jul-2014.
 " Maintainer:  kamichidu <c.kamunagi@gmail.com>
 " License:     The MIT License (MIT) {{{
 " 
@@ -53,8 +53,8 @@ augroup vim_edit_properties
 augroup END
 
 command! -nargs=+ -complete=file EditPropsGrep call edit_properties#grep(<f-args>)
-command! -nargs=? -range EditPropsEncode call edit_properties#native2ascii('%', <line1>, <line2>)
-command! -nargs=? -range EditPropsDecode call edit_properties#ascii2native('%', <line1>, <line2>)
+command! -nargs=? -range EditPropsEncode call edit_properties#native2ascii(<line1>, <line2>)
+command! -nargs=? -range EditPropsDecode call edit_properties#ascii2native(<line1>, <line2>)
 
 let &cpo= s:save_cpo
 unlet s:save_cpo

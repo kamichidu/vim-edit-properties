@@ -37,18 +37,8 @@ function! s:native2ascii.encode(s)
         let i+= 1
 
         if cn > 0x003d && cn < 0x007f
-            if c ==# '\'
-                let buf+= ['\', '\']
-                continue
-            endif
             let buf+= [c]
-            continue
-        endif
-
-        if c ==# ' '
-            if i == 0
-                let buf+= ['\']
-            endif
+        elseif c ==# ' '
             let buf+= [' ']
         elseif c ==# "\t"
             let buf+= ['\', 't']
@@ -58,8 +48,6 @@ function! s:native2ascii.encode(s)
             let buf+= ['\', 'r']
         elseif c ==# "\f"
             let buf+= ['\', 'f']
-        elseif c ==# '=' || c ==# ':' || c ==# '#' || c ==# '!'
-            let buf+= ['\', c]
         else
             if cn < 0x0020 || cn > 0x007e
                 let buf+= ['\', 'u', printf('%04x', cn)]

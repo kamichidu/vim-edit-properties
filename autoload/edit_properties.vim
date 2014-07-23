@@ -1,6 +1,6 @@
 " ----------------------------------------------------------------------------
 " File:        autoload/edit_properties.vim
-" Last Change: 22-Jul-2014.
+" Last Change: 24-Jul-2014.
 " Maintainer:  kamichidu <c.kamunagi@gmail.com>
 " License:     The MIT License (MIT) {{{
 " 
@@ -92,8 +92,8 @@ function! edit_properties#grep(...)
 endfunction
 
 " \uxxxx => あ
-function! edit_properties#ascii2native(expr, lnum, ...)
-    let lines= getbufline(a:expr, a:lnum, get(a:000, 0, a:lnum))
+function! edit_properties#ascii2native(lnum, ...)
+    let lines= getline(a:lnum, get(a:000, 0, a:lnum))
     let buf= []
 
     for line in lines
@@ -104,8 +104,8 @@ function! edit_properties#ascii2native(expr, lnum, ...)
 endfunction
 
 " あ => \uxxxx
-function! edit_properties#native2ascii(expr, lnum, ...)
-    let lines= getbufline(a:expr, a:lnum, get(a:000, 0, a:lnum))
+function! edit_properties#native2ascii(lnum, ...)
+    let lines= getline(a:lnum, get(a:000, 0, a:lnum))
     let buf= []
 
     for line in lines
