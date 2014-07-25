@@ -70,33 +70,33 @@ function! s:native2ascii.decode(s)
         let c= chars[i]
         let i+= 1
 
-        if c ==# '\'
+        if c ==# '\' && i < length
             let c= chars[i]
             let i+= 1
 
             if c ==# 'u'
                 " read the xxxx
-                let buf+= [nr2char(printf('%d', '0x' . join(chars[i : i + 3], '')), 1)]
+                let buf+= s:nr2char(eval('0x' . join(chars[i : (i + 3)], '')))
                 let i+= 4
             else
-                if c ==# 't'
-                    let c= "\t"
-                elseif c ==# 'r'
-                    let c= "\r"
-                elseif c ==# 'n'
-                    let c= "\n"
-                elseif c ==# 'f'
-                    let c= "\f"
-                endif
-
-                let buf+= [c]
+                let buf+= ['\', c]
             endif
         else
             let buf+= [c]
         endif
     endwhile
 
-    return iconv(join(buf, ''), 'utf8', &encoding)
+    return join(buf, '')
+endfunction
+
+function! s:nr2char(nr)
+    let c= iconv(nr2char(a:nr, 1), 'utf8', &encoding)
+
+    if c !=# '?'
+        return [c]
+    else
+        return ['\', 'u'] + split(printf('%04x', a:nr), '\zs')
+    endif
 endfunction
 
 function! edit_properties#native2ascii#get()
