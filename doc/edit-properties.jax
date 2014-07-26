@@ -1,7 +1,7 @@
 *edit-properties.jax* 日本語ヘルプ
 
-Version:     0.24
-Last Change: 28-Dec-2013.
+Version:     0.30
+Last Change: 26-Jul-2014.
 Maintainer:  kamichidu <c.kamunagi@gmail.com>
 License:     The MIT License (MIT) {{{
 
@@ -29,41 +29,31 @@ License:     The MIT License (MIT) {{{
              OTHER DEALINGS IN THE SOFTWARE.
 }}}
 
-目次                                            *edit-properties-contents*
+目次                                                *edit-properties-contents*
 
-    概要                                        |edit-properties-introduction|
-    インストール                                |edit-properties-install|
-    変数                                        |edit-properties-variable|
-    コマンド                                    |edit-properties-command|
-    Uniteインタフェイス                      |edit-properties-unite-interface|
-    更新履歴                                    |edit-properties-changelog|
+概要                                            |edit-properties-introduction|
+インストール                                         |edit-properties-install|
+変数                                                |edit-properties-variable|
+コマンド                                             |edit-properties-command|
+Uniteインタフェイス                          |edit-properties-unite-interface|
+更新履歴                                           |edit-properties-changelog|
 
 ==============================================================================
 概要                                            *edit-properties-introduction*
 
-    *edit-properties* は、javaのプロパティファイルを編集するためのプラグインで
-    す。プロパティファイルで日本語等を使用した場合の編集をやりやすくするため
-    に、JDKで提供されている`native2ascii`を用いて、読み込み、書き込み時に自動
-    でフィルタを行う機能を提供します。
-    
-    javaのプロパティファイルで日本語等、非ascii文字を使った場合、一般的
-    にはすべてascii文字で構成された文字列に変換して保存します。
-    例えば次のように変換することになります。
->
-    ↓のようになります。
+*edit-properties* は、javaのプロパティファイルを編集するためのプラグインです。
+javaのプロパティファイルでは、日本語等のマルチバイト文字は `\uxxxx` の形式で
+記述しなければなりません。通常であれば、 `native2ascii` を用いて変換/逆変換を
+行うのですが、毎回行うのも手間です。
+|edit-properties| を使用することで、プロパティファイルを編集する際の種々の手間
+が大変便利です。
 
-    \u2193\u306e\u3088\u3046\u306b\u306a\u308a\u307e\u3059\u3002
-<
-    例えばeclipseでは、この変換を自動で行なってくれるプラグインがありますが、
-    vim用のものは見当たらなかったので作ってみました。
 
 ==============================================================================
-インストール                                    *edit-properties-install*
+インストール                                         *edit-properties-install*
 
-    `native2ascii`が実行可能である必要があります。`native2ascii`はJDKに
-    付属しているため、JDKがインストールされている必要があります。
-    |vim-edit-properties|は、以下を.vimrcに追加し、|:NeoBundleInstall|すること
-    でインストールすることができます。
+|vim-edit-properties|は、以下を.vimrcに追加し、|:NeoBundleInstall|すること
+でインストールすることができます。
 >
     " Optional: 'Shougo/unite.vim'
     NeoBundle 'KamunagiChiduru/vim-edit-properties', {
@@ -72,26 +62,40 @@ License:     The MIT License (MIT) {{{
 <
 
 ==============================================================================
-変数                                            *edit-properties-variable*
+変数                                                *edit-properties-variable*
 
-g:editproperties_grepprg                        *g:editproperties_grepprg*
+                                                    *g:editproperties_grepprg*
+g:editproperties_grepprg
         (default: &grepprg)
     |:EditPropsGrep|で使用される|'grepprg'|です。
 
-g:editproperties_grepformat                     *g:editproperties_grepformat*
+                                                 *g:editproperties_grepformat*
+g:editproperties_grepformat
         (default: &grepformat)
     |:EditPropsGrep|で使用される、|'grepformat'|です。
 
 ==============================================================================
-コマンド                                        *edit-properties-command*
+コマンド                                             *edit-properties-command*
 
-:EditPropsGrep [options] /pattern/ [filename(s)] *:EditPropsGrep*
+                                                              *:EditPropsGrep*
+:EditPropsGrep [options] /pattern/ [filename(s)]
     {pattern}を用いて、javaのプロパティファイルをgrepします。
     {pattern}に含まれる非ascii文字はUnicodeエスケープされるため、?や+、*
     などの正規表現では()を使う必要があるかもしれません。
 >
     :EditPropsGrep /(ほ)+げ/ *
 <
+                                                            *:EditPropsEncode*
+:[range]EditPropsEncode
+    [range]指定された各行に対して、マルチバイト文字を`\uxxxx`形式に
+    変換します。[range]が省略された場合、対象はカレント行です。
+
+                                                            *:EditPropsDecode*
+:[range]EditPropsDecode
+    [range]指定された各行に対して、`\uxxxx`形式の文字をマルチバイト文字に
+    変換します。[range]が省略された場合、対象はカレント行です。
+    
+
 ==============================================================================
 Uniteインタフェイス                          *edit-properties-unite-interface*
 
@@ -104,6 +108,12 @@ Uniteインタフェイス                          *edit-properties-unite-inter
 更新履歴                                        *edit-properties-changelog*
 
 https://github.com/KamunagiChiduru/vim-edit-properties/commits/master
+
+0.30 26-Jul-2014
+
+    * native2asciiへの依存を廃止
+    * :EditPropsEncodeを追加
+    * :EditPropsDecodeを追加
 
 0.24 28-Dec-2013
 
