@@ -4,3 +4,4 @@ c181bbd
 Data.List
 OptionParser
 Process
+Vim.Message

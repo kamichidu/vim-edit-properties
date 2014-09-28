@@ -1,6 +1,6 @@
 " ----------------------------------------------------------------------------
 " File:        edit-properties.vim
-" Last Change: 24-Jul-2014.
+" Last Change: 28-Sep-2014.
 " Maintainer:  kamichidu <c.kamunagi@gmail.com>
 " License:     The MIT License (MIT) {{{
 " 
@@ -33,10 +33,6 @@ if exists('g:loaded_editproperties') && g:loaded_editproperties
 endif
 let g:loaded_editproperties= 1
 
-if !executable('native2ascii')
-    finish
-endif
-
 let s:save_cpo= &cpo
 set cpo&vim
 
@@ -55,6 +51,11 @@ augroup END
 command! -nargs=+ -complete=file EditPropsGrep call edit_properties#grep(<f-args>)
 command! -nargs=? -range EditPropsEncode call edit_properties#native2ascii(<line1>, <line2>)
 command! -nargs=? -range EditPropsDecode call edit_properties#ascii2native(<line1>, <line2>)
+
+" ctrlp.vim extension
+command!
+\   -nargs=1 -complete=customlist,ctrlp#edit_properties#complete
+\   CtrlPEditProps call ctrlp#edit_properties#launch(<q-args>)
 
 let &cpo= s:save_cpo
 unlet s:save_cpo
