@@ -1,7 +1,7 @@
 *edit-properties.jax* 日本語ヘルプ
 
-Version:     0.30
-Last Change: 26-Jul-2014.
+Version:     0.31
+Last Change: 28-Sep-2014.
 Maintainer:  kamichidu <c.kamunagi@gmail.com>
 License:     The MIT License (MIT) {{{
 
@@ -36,6 +36,7 @@ License:     The MIT License (MIT) {{{
 変数                                                |edit-properties-variable|
 コマンド                                             |edit-properties-command|
 Uniteインタフェイス                          |edit-properties-unite-interface|
+CtrlPインタフェイス                          |edit-properties-ctrlp-interface|
 更新履歴                                           |edit-properties-changelog|
 
 ==============================================================================
@@ -74,6 +75,11 @@ g:editproperties_grepformat
         (default: &grepformat)
     |:EditPropsGrep|で使用される、|'grepformat'|です。
 
+                                                *g:editproperties_regexescape*
+g:editproperties_regexescape
+        (default: 0)
+    |:EditPropsGrep|が正規表現マッチを行うかどうか。
+
 ==============================================================================
 コマンド                                             *edit-properties-command*
 
@@ -105,9 +111,22 @@ Uniteインタフェイス                          *edit-properties-unite-inter
     :Unite edit_properties/locale
 <
 ==============================================================================
+CtrlPインタフェイス                          *edit-properties-ctrlp-interface*
+
+    |ctrlp.vim|をインストールしていれば、現在編集中のファイルに対応する
+    別ロケール用のファイルを|ctrlp|インタフェイスから開くことができます。
+>
+    :CtrlPEditProps --locale
+<
+==============================================================================
 更新履歴                                        *edit-properties-changelog*
 
 https://github.com/KamunagiChiduru/vim-edit-properties/commits/master
+
+0.31 28-Sep-2014
+
+    * :CtrlPEditPropsを追加
+    * :EditPropsGrepにバグがあったため修正
 
 0.30 26-Jul-2014
 

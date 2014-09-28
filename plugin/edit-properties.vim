@@ -38,6 +38,7 @@ set cpo&vim
 
 let g:editproperties_grepprg= get(g:, 'editproperties_grepprg', &grepprg)
 let g:editproperties_grepformat= get(g:, 'editproperties_grepformat', &grepformat)
+let g:editproperties_regexescape= get(g:, 'editproperties_regexescape', 0)
 
 augroup vim_edit_properties
     autocmd!

@@ -33,62 +33,29 @@ set cpo&vim
 
 let s:V= vital#of('editproperties')
 let s:L= s:V.import('Data.List')
-let s:P= s:V.import('Process')
 unlet s:V
 
 let s:n2a= edit_properties#native2ascii#get()
 
 function! edit_properties#grep(...)
-    let l:args= copy(a:000)
-    " validate arguments
-    if empty(filter(copy(l:args), 'v:val =~# ''^/.*/$'''))
-        echoerr 'edit_properties: /pattern/ is required!'
-        return
-    endif
-    " EditPropsGrep --hoge --fuga /aaaa/ ~/dir/filename
-    " => l:grep_args == ['--hoge', '--fuga']
-    " => l:pattern   == 'aaaa'
-    " => l:filenames == ['~/dir/filename']
-    let [l:grep_args, l:pattern, l:filenames]= [[], '', []]
-    while !empty(l:args)
-        let l:arg= s:L.shift(l:args)
-
-        if l:arg =~# '^-'
-            call s:L.push(l:grep_args, l:arg)
-        elseif l:arg =~# '^/.*/$'
-            let l:pattern= matchstr(l:arg, '^/\zs.*\ze/$')
-            let l:filenames= l:args
-            break
-        endif
-
-        unlet l:arg
-    endwhile
+    let args= copy(a:000)
 
     " make pattern to searchable
-    let l:pattern= s:P.system('native2ascii', l:pattern)
-    let l:pattern= substitute(l:pattern, "\n$", '', '')
-    let l:pattern= substitute(l:pattern, '\c\\u', '\\\\u', 'g')
+    let args= map(args, 's:escapegrep(v:val)')
 
     " execute grep
     " save environment
-    let l:save_env= [&l:grepprg, &l:grepformat]
+    let save_env= [&grepprg, &grepformat]
+    try
+        " prepare
+        let &grepprg= get(g:, 'editproperties_grepprg', &grepprg)
+        let &grepformat= get(g:, 'editproperties_grepformat', &grepformat)
 
-    " prepare
-    let &l:grepprg= get(g:, 'editproperties_grepprg', &l:grepprg)
-    let &l:grepformat= get(g:, 'editproperties_grepformat', &l:grepformat)
-
-    let l:cmd= join([
-    \       'grep',
-    \       join(l:grep_args, ' '),
-    \       l:pattern,
-    \       join(map(copy(l:filenames), 'expand(v:val)'), ' '),
-    \   ],
-    \   ' '
-    \)
-    execute l:cmd
-
-    " restore environment
-    let [&l:grepprg, &l:grepformat]= l:save_env
+        execute 'grep' join(args, ' ')
+    finally
+        " restore environment
+        let [&grepprg, &grepformat]= save_env
+    endtry
 endfunction
 
 " \uxxxx => あ
@@ -113,6 +80,21 @@ function! edit_properties#native2ascii(lnum, ...)
     endfor
 
     call setline(a:lnum, buf)
+endfunction
+
+function! s:escapegrep(s)
+    let s= s:n2a.encode(a:s)
+
+    " only ascii
+    if s ==# a:s
+        return s
+    endif
+
+    if get(g:, 'editproperties_regexescape', 0)
+        return substitute(s, '\c\\u', '\\\\u', 'g')
+    else
+        return s
+    endif
 endfunction
 
 let &cpo= s:save_cpo
