@@ -24,18 +24,22 @@ function! s:cons(x, xs)
   return [a:x] + a:xs
 endfunction
 
-" TODO spec
 function! s:conj(xs, x)
   return a:xs + [a:x]
 endfunction
 
 " Removes duplicates from a list.
-function! s:uniq(list, ...)
-  let list = a:0 ? map(copy(a:list), printf('[v:val, %s]', a:1)) : copy(a:list)
+function! s:uniq(list)
+  return s:uniq_by(a:list, 'v:val')
+endfunction
+
+" Removes duplicates from a list.
+function! s:uniq_by(list, f)
+  let list = map(copy(a:list), printf('[v:val, %s]', a:f))
   let i = 0
   let seen = {}
   while i < len(list)
-    let key = string(a:0 ? list[i][1] : list[i])
+    let key = string(list[i][1])
     if has_key(seen, key)
       call remove(list, i)
     else
@@ -43,7 +47,7 @@ function! s:uniq(list, ...)
       let i += 1
     endif
   endwhile
-  return a:0 ? map(list, 'v:val[0]') : list
+  return map(list, 'v:val[0]')
 endfunction
 
 function! s:clear(list)
@@ -56,29 +60,29 @@ endfunction
 " Concatenates a list of lists.
 " XXX: Should we verify the input?
 function! s:concat(list)
-  let list = []
+  let memo = []
   for Value in a:list
-    let list += Value
+    let memo += Value
   endfor
-  return list
+  return memo
 endfunction
 
 " Take each elements from lists to a new list.
 function! s:flatten(list, ...)
   let limit = a:0 > 0 ? a:1 : -1
-  let list = []
+  let memo = []
   if limit == 0
     return a:list
   endif
   let limit -= 1
   for Value in a:list
-    let list +=
+    let memo +=
           \ type(Value) == type([]) ?
           \   s:flatten(Value, limit) :
           \   [Value]
     unlet! Value
   endfor
-  return list
+  return memo
 endfunction
 
 " Sorts a list with expression to compare each two values.
@@ -104,11 +108,6 @@ function! s:sort_by(list, expr)
   \      'a:a[1] ==# a:b[1] ? 0 : a:a[1] ># a:b[1] ? 1 : -1'), 'v:val[0]')
 endfunction
 
-function! s:max(list, expr)
-  echoerr 'Data.List.max() is obsolete. Use its max_by() instead.'
-  return s:max_by(a:list, a:expr)
-endfunction
-
 " Returns a maximum value in {list} through given {expr}.
 " Returns 0 if {list} is empty.
 " v:val is used in {expr}
@@ -118,11 +117,6 @@ function! s:max_by(list, expr)
   endif
   let list = map(copy(a:list), a:expr)
   return a:list[index(list, max(list))]
-endfunction
-
-function! s:min(list, expr)
-  echoerr 'Data.List.min() is obsolete. Use its min_by() instead.'
-  return s:min_by(a:list, a:expr)
 endfunction
 
 " Returns a minimum value in {list} through given {expr}.
@@ -204,6 +198,18 @@ function! s:or(xs)
   return s:any('v:val', a:xs)
 endfunction
 
+function! s:map_accum(expr, xs, init)
+  let memo = []
+  let init = a:init
+  for x in a:xs
+    let expr = substitute(a:expr, 'v:memo', init, 'g')
+    let expr = substitute(expr, 'v:val', x, 'g')
+    let [tmp, init] = eval(expr)
+    call add(memo, tmp)
+  endfor
+  return memo
+endfunction
+
 " similar to Haskell's Prelude.foldl
 function! s:foldl(f, init, xs)
   let memo = a:init
@@ -272,10 +278,104 @@ function! s:find(list, default, f)
   return a:default
 endfunction
 
+" Returns the index of the first element which satisfies the given expr.
+function! s:find_index(xs, f, ...)
+  let len = len(a:xs)
+  let start = a:0 > 0 ? (a:1 < 0 ? len + a:1 : a:1) : 0
+  let default = a:0 > 1 ? a:2 : -1
+  if start >=# len || start < 0
+    return default
+  endif
+  for i in range(start, len - 1)
+    if eval(substitute(a:f, 'v:val', string(a:xs[i]), 'g'))
+      return i
+    endif
+  endfor
+  return default
+endfunction
+
+" Returns the index of the last element which satisfies the given expr.
+function! s:find_last_index(xs, f, ...)
+  let len = len(a:xs)
+  let start = a:0 > 0 ? (a:1 < 0 ? len + a:1 : a:1) : len - 1
+  let default = a:0 > 1 ? a:2 : -1
+  if start >=# len || start < 0
+    return default
+  endif
+  for i in range(start, 0, -1)
+    if eval(substitute(a:f, 'v:val', string(a:xs[i]), 'g'))
+      return i
+    endif
+  endfor
+  return default
+endfunction
+
+" Similar to find_index but returns the list of indices satisfying the given expr.
+function! s:find_indices(xs, f, ...)
+  let len = len(a:xs)
+  let start = a:0 > 0 ? (a:1 < 0 ? len + a:1 : a:1) : 0
+  let result = []
+  if start >=# len || start < 0
+    return result
+  endif
+  for i in range(start, len - 1)
+    if eval(substitute(a:f, 'v:val', string(a:xs[i]), 'g'))
+      call add(result, i)
+    endif
+  endfor
+  return result
+endfunction
+
 " Return non-zero if a:list1 and a:list2 have any common item(s).
 " Return zero otherwise.
 function! s:has_common_items(list1, list2)
   return !empty(filter(copy(a:list1), 'index(a:list2, v:val) isnot -1'))
+endfunction
+
+" similar to Ruby's group_by.
+function! s:group_by(xs, f)
+  let result = {}
+  let list = map(copy(a:xs), printf('[v:val, %s]', a:f))
+  for x in list
+    let Val = x[0]
+    let key = type(x[1]) !=# type('') ? string(x[1]) : x[1]
+    if has_key(result, key)
+      call add(result[key], Val)
+    else
+      let result[key] = [Val]
+    endif
+    unlet Val
+  endfor
+  return result
+endfunction
+
+function! s:_default_compare(a, b)
+  return a:a <# a:b ? -1 : a:a ># a:b ? 1 : 0
+endfunction
+
+function! s:binary_search(list, value, ...)
+  let Predicate = a:0 >= 1 ? a:1 : 's:_default_compare'
+  let dic = a:0 >= 2 ? a:2 : {}
+  let start = 0
+  let end = len(a:list) - 1
+
+  while 1
+    if start > end
+      return -1
+    endif
+
+    let middle = (start + end) / 2
+
+    let compared = call(Predicate, [a:value, a:list[middle]], dic)
+
+    if compared < 0
+      let end = middle - 1
+    elseif compared > 0
+      let start = middle + 1
+    else
+      return middle
+    endif
+  endwhile
 endfunction
 
 let &cpo = s:save_cpo

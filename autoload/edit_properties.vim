@@ -1,6 +1,6 @@
 " ----------------------------------------------------------------------------
 " File:        autoload/edit_properties.vim
-" Last Change: 24-Jul-2014.
+" Last Change: 28-Sep-2014.
 " Maintainer:  kamichidu <c.kamunagi@gmail.com>
 " License:     The MIT License (MIT) {{{
 " 
@@ -31,7 +31,7 @@
 let s:save_cpo= &cpo
 set cpo&vim
 
-let s:V= vital#of('vim-edit-properties')
+let s:V= vital#of('editproperties')
 let s:L= s:V.import('Data.List')
 let s:P= s:V.import('Process')
 unlet s:V
